@@ -1,6 +1,6 @@
 # ndrop
 
-This Bash script emulates the main features of [tdrop](https://github.com/noctuid/tdrop) in niri:
+This Bash script emulates the main features of [tdrop](https://github.com/noctuid/tdrop) in [niri](https://github.com/YaLTeR/niri):
 
 - if the specified program is not running: launch it and bring it to the foreground.
 - if the specified program is already running on another workspace: bring it to the current workspace and focus it.
@@ -64,9 +64,11 @@ binds {
 
 ## Troubleshooting
 
-### Programs are not moved away from the starting workspace
+### Programs are not moved away from the present workspace
 
-Please see the example bindings. The has to be a workspace named `ndrop` for ndrop to work.
+Please see the example bindings. There has to be a workspace named `ndrop` for ndrop to work and `ndrop` may not be your present workspace.
+
+So far, i've found no way to have named workspaces that are "out of the way" of the regular workspaces so the behaviour of `ndrop` is inferior to `hdrop`.
 
 ### Further instances of programs are started instead of hiding/unhiding a running instance
 
