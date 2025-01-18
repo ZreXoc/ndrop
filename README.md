@@ -6,6 +6,9 @@ This Bash script emulates the main features of [tdrop](https://github.com/noctui
 - if the specified program is already running on another workspace: bring it to the current workspace and focus it.
 - if the specified program is already on the current workspace: move it to workspace 'niri', thereby hiding it until called up again by ndrop.
 
+> \[!NOTE]
+> Niri doesn't implement scratchpads yet so ndrop is inferior to hdrop until they are added to niri.
+
 #### Usage:
 
 > ndrop [OPTIONS] [COMMAND]
@@ -30,7 +33,7 @@ This Bash script emulates the main features of [tdrop](https://github.com/noctui
 > Case insensitive partial matching of class names. Can work as a stopgap if a running program is not recognized and a new instance is launched instead. Note: incorrect matches may occur, adding a special handling of the program to ndrop (hardcoded or via `-c, --class`) is preferable.
 >
 > -o, --online  
-> Wait until internet connectivity is established.
+> Delay initial launch for up to 20 seconds until internet connectivity is established.
 >
 > -v, --verbose  
 > Show notifications regarding the matching process. Try this to figure out why running programs are not matched.
@@ -68,7 +71,7 @@ binds {
 
 Please see the example bindings. There has to be a workspace named `ndrop` for ndrop to work and `ndrop` may not be your present workspace.
 
-So far, i've found no way to have named workspaces that are "out of the way" of the regular workspaces so the behaviour of `ndrop` is inferior to `hdrop`.
+Niri doesn't implement scratchpads yet so the behaviour of `ndrop` is inferior to `hdrop`.
 
 ### Further instances of programs are started instead of hiding/unhiding a running instance
 
