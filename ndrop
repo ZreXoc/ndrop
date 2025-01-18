@@ -29,7 +29,8 @@ print_help() {
   echo "          a new instance is launched instead."
   echo ""
   echo "  -o, --online"
-  echo "          Wait until internet connectivity is established."
+  echo "          Delay initial launch for up to 20 seconds"
+  echo "          until internet connectivity is established."
   echo ""
   echo "  -v, --verbose"
   echo "          Show notifications regarding the matching process."
@@ -68,8 +69,8 @@ partial_match() {
   CLASS=$(niri msg --json windows | jq -r ".[] | select((.app_id |match(\"$1\";\"i\"))) | .app_id" | head -1)
 }
 
-wait_online=0
 wait_online() {
+  wait_online=0
   while [[ $wait_online -lt 200 ]]; do
     ping -qc 1 -w 20 -i 0.1 github.com && break
     sleep 0.1
@@ -149,6 +150,9 @@ case "$1" in
 epiphany)
   CLASS="org.gnome.Epiphany"
   ;;
+brave)
+  CLASS="brave-browser"
+  ;;
 foot)
   OPT=$(getopt --options a: --longoptions app-id: -n ndrop -- "$@")
   ;;
@@ -169,7 +173,7 @@ tor-browser)
   ;;
 esac
 
-if $VERBOSE && [[ $1 -ne $CLASS ]]; then notify_low "ndrop: Using '$CLASS' as hardcoded classname of '$1' for matching"; fi
+if $VERBOSE && [[ $1 != "$CLASS" ]]; then notify_low "ndrop: Using '$CLASS' as hardcoded classname of '$1' for matching"; fi
 
 if [[ -n $OPT ]]; then
   eval set -- "$OPT" # remove leading whitespace
@@ -181,7 +185,7 @@ if [[ -n $OPT ]]; then
   esac
 fi
 
-if $INSENSITIVE && [[ $(niri msg --json windows | jq -r ".[] | select((.app_id |test(\"$CLASS\";\"i\")))") ]]; then
+if $INSENSITIVE && [[ -n $(niri msg --json windows | jq -r ".[] | select((.app_id |test(\"$CLASS\";\"i\")))") ]]; then
   if $VERBOSE; then notify_low "ndrop: --insensitive -> Insensitive (partial) match of class '$CLASS' successful"; fi
   CLASS=$(niri msg --json windows | jq -r ".[] | select((.app_id |match(\"$CLASS\";\"i\"))) | .app_id" | head -1) || notify "ndrop: Error assigning case insensitive (partial) match to CLASS"
   if $VERBOSE; then notify_low "ndrop: --insensitive -> Using class '$CLASS' after insensitive (partial) matching"; fi
@@ -195,7 +199,7 @@ fi
 WINDOW_ID=$(niri msg --json windows | jq -r ".[] | select(.app_id==\"$CLASS\") | .id")
 
 ### OVERRIDE ###
-# FOCUS=true
+FOCUS=true
 
 if [[ -n $(niri msg --json windows | jq -r ".[] | select(.app_id==\"$CLASS\" and .workspace_id!=\"$ACTIVE_WORKSPACE\")") ]]; then
   if [[ $FOCUS == false ]]; then
@@ -204,14 +208,14 @@ if [[ -n $(niri msg --json windows | jq -r ".[] | select(.app_id==\"$CLASS\" and
     if $VERBOSE; then notify_low "ndrop: Matched class '$CLASS' on another workspace and moved it to current workspace"; fi
   fi
   niri msg action focus-window --id "$WINDOW_ID" || notify "ndrop: Error focusing '$COMMANDLINE' on current workspace"
-elif [[ $(niri msg --json windows | jq -r ".[] | select(.app_id==\"$CLASS\" and .workspace_id==\"$ACTIVE_WORKSPACE\")") ]]; then
+elif [[ -n $(niri msg --json windows | jq -r ".[] | select(.app_id==\"$CLASS\" and .workspace_id==\"$ACTIVE_WORKSPACE\")") ]]; then
   if [[ $FOCUS == false ]]; then
     # shellcheck disable=SC2086 # integers won't be split
     niri msg action move-window-to-workspace --window-id "$WINDOW_ID" "ndrop" || notify "ndrop: Error moving '$COMMANDLINE' to workspace 'ndrop'"
     niri msg action focus-workspace "$ACTIVE_WORKSPACE"
     if $VERBOSE; then notify_low "ndrop: Matched class '$CLASS' on current workspace and moved it to workspace 'ndrop'"; fi
     # else
-  elif [[ $(niri msg --json windows | jq -r ".[] | select(.app_id==\"$CLASS\" and .workspace_id!=\"ndrop\")") ]]; then
+  elif [[ -n $(niri msg --json windows | jq -r ".[] | select(.app_id==\"$CLASS\" and .workspace_id!=\"ndrop\")") ]]; then
     niri msg action focus-window --id "$WINDOW_ID" || notify "ndrop: Error focusing '$COMMANDLINE' on current workspace"
   fi
 else

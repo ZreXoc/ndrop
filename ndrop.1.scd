@@ -25,8 +25,8 @@ ndrop - run, show and hide programs on niri
 *-i, --insensitive*
 	Case insensitive partial matching of class names. Can work as a stopgap if a running program is not recognized and a new instance is launched instead. Note: incorrect matches may occur, adding a special handling of the program to *ndrop* (hardcoded or via *-c, --class*) is preferable.
 
-*-o, --online
-	Wait until internet connectivity is established.
+*-o, --online*
+	Delay initial launch for up to 20 seconds until internet connectivity is established.
 
 *-v, --verbose*  
 	Show notifications regarding the matching process. Try this to figure out why running programs are not matched."
