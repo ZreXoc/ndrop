@@ -72,7 +72,7 @@ partial_match() {
 wait_online() {
   wait_online=0
   while [[ $wait_online -lt 200 ]]; do
-    ping -qc 1 -w 20 -i 0.1 github.com && break
+    ping -qc 1 github.com && break
     sleep 0.1
     $wait_online++
   done
