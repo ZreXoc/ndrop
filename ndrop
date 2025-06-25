@@ -199,7 +199,6 @@ fi
 
 WINDOW_ID=$(niri msg --json windows | jq -r ".[] | select(.app_id==\"$CLASS\") | .id")
 
-notify $ACTIVE_WORKSPACE
 if [[ -n $(niri msg --json windows | jq -r ".[] | select(.app_id==\"$CLASS\" and .workspace_id!=$ACTIVE_WORKSPACE)") ]]; then
   if [[ $FOCUS == false ]]; then
     # shellcheck disable=SC2140 # erroneous warning
